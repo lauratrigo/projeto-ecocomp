@@ -114,14 +114,23 @@ body {
 .dashboard-cards .dashboard-card {
     cursor: pointer;
     background: linear-gradient(180deg, #ffffff 0%, #fbfefc 100%);
+    text-align: left;
+    padding: 1rem 1.2rem;
+}
+
+.dashboard-cards .dashboard-card::after {
+    display: none;
 }
 
 .dashboard-cards .dashboard-card::before {
     content: "";
     position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at top, rgba(116, 198, 157, 0.24), transparent 65%);
-    opacity: 0;
+    inset: -20% -30% auto auto;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(116, 198, 157, 0.2), transparent 70%);
+    opacity: 0.65;
     transition: opacity 0.25s ease;
     pointer-events: none;
 }
@@ -138,6 +147,83 @@ body {
 
 .dashboard-cards .dashboard-card:hover h3 {
     color: #1b4332;
+}
+
+.sensor-card {
+    --accent: #2d6a4f;
+    --accent-soft: rgba(45, 106, 79, 0.16);
+}
+
+.sensor-card h3 {
+    margin: 0;
+    text-transform: none;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #2f3640;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sensor-card .card-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+}
+
+.sensor-card .card-icon.thermo-icon {
+    width: 18px;
+    height: 22px;
+    flex-shrink: 0;
+    display: inline-block;
+    background-repeat: no-repeat;
+    background-size: 90% 90%;
+    background-position: center;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2 -2 28 28' fill='none' stroke='%23e74c3c' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 14.8V5a4 4 0 0 0-8 0v9.8a6 6 0 1 0 8 0Z'/%3E%3Cline x1='10' y1='9' x2='10' y2='17'/%3E%3C/svg%3E");
+}
+
+.sensor-card .card-main-value {
+    margin-top: 8px;
+    font-size: 2.05rem;
+    color: #1f3d31;
+    line-height: 1.1;
+}
+
+.sensor-card small {
+    display: block;
+    margin-top: 4px;
+    color: #6c757d;
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+.meter {
+    margin-top: 10px;
+    height: 8px;
+    border-radius: 999px;
+    background: #d9dee3;
+    overflow: hidden;
+}
+
+.meter-fill {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--accent), rgba(255, 255, 255, 0.65));
+    transition: width 0.35s ease;
+}
+
+.soil-card {
+    --accent: #2f9e44;
+}
+
+.air-card {
+    --accent: #2b8bd8;
+}
+
+.temp-card {
+    --accent: #d9a106;
 }
 
 .card h3 {
@@ -212,6 +298,60 @@ small {
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.history-chart-section {
+    background: white;
+    border: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.history-legend {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    margin-bottom: 10px;
+    text-align: center;
+    width: 100%;
+}
+
+#historyChart {
+    display: block;
+    width: 100% !important;
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+.history-legend ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.history-legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: #555;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.history-legend .legend-box {
+    width: 34px;
+    height: 12px;
+    border: 2px solid;
+    border-radius: 1px;
 }
 
 .logo-container {

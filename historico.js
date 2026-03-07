@@ -3,6 +3,47 @@
 
 let historyChart;
 
+const htmlLegendPlugin = {
+  id: "htmlLegend",
+  afterUpdate(chart, args, options) {
+    const legendContainer = document.getElementById(options.containerID);
+    if (!legendContainer) return;
+
+    let listContainer = legendContainer.querySelector("ul");
+    if (!listContainer) {
+      listContainer = document.createElement("ul");
+      legendContainer.appendChild(listContainer);
+    }
+
+    while (listContainer.firstChild) {
+      listContainer.firstChild.remove();
+    }
+
+    const items = chart.options.plugins.legend.labels.generateLabels(chart);
+
+    items.forEach((item) => {
+      const li = document.createElement("li");
+      li.onclick = () => {
+        chart.setDatasetVisibility(item.datasetIndex, !chart.isDatasetVisible(item.datasetIndex));
+        chart.update();
+      };
+
+      const box = document.createElement("span");
+      box.className = "legend-box";
+      box.style.borderColor = item.strokeStyle;
+      box.style.background = "transparent";
+
+      const text = document.createElement("span");
+      text.style.textDecoration = item.hidden ? "line-through" : "";
+      text.appendChild(document.createTextNode(item.text));
+
+      li.appendChild(box);
+      li.appendChild(text);
+      listContainer.appendChild(li);
+    });
+  },
+};
+
 function formatarData(dataIso) {
   const data = new Date(dataIso);
   return data.toLocaleString("pt-BR");
@@ -12,8 +53,9 @@ function normalizar(item) {
   return {
     createdAt: item.createdAt || item.timestamp || new Date().toISOString(),
     soil: Number(item.soil ?? item.soloEstufa ?? 0),
+    airHumidity: Number(item.airHumidity ?? item.humidity ?? item.umidArEstufa ?? 0),
     soilExternal: Number(item.soilExternal ?? item.soloExterno ?? 0),
-    temp: Number(item.temp ?? item.tempEstufa ?? 0),
+    temp: Number(item.airTemp ?? item.temp ?? item.tempEstufa ?? 0),
     tempExternal: Number(item.tempExternal ?? item.tempExterno ?? 0),
   };
 }
@@ -54,7 +96,10 @@ function atualizarTabela(lista) {
 function atualizarGrafico(lista) {
   const labels = lista.map((x) => formatarData(x.createdAt));
   const dadosSolo = lista.map((x) => x.soil);
+  const dadosSoloExterno = lista.map((x) => x.soilExternal);
+  const dadosUmidadeAr = lista.map((x) => x.airHumidity);
   const dadosTemp = lista.map((x) => x.temp);
+  const dadosTempExterna = lista.map((x) => x.tempExternal);
 
   const ctx = document.getElementById("historyChart").getContext("2d");
 
@@ -63,26 +108,84 @@ function atualizarGrafico(lista) {
   }
 
   historyChart = new Chart(ctx, {
+    plugins: [htmlLegendPlugin],
     type: "line",
     data: {
       labels,
       datasets: [
         {
-          label: "Solo estufa (%)",
+          label: "Umidade do Solo (%)",
           data: dadosSolo,
-          borderColor: "#2d6a4f",
+          borderColor: "#ff1e1e",
+          fill: false,
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 3,
+          tension: 0,
           yAxisID: "y",
         },
         {
-          label: "Temp estufa (°C)",
+          label: "Solo Externo (%)",
+          data: dadosSoloExterno,
+          borderColor: "#8a5cff",
+          fill: false,
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 3,
+          tension: 0,
+          yAxisID: "y",
+        },
+        {
+          label: "Umidade do Ar (%)",
+          data: dadosUmidadeAr,
+          borderColor: "#37d67a",
+          fill: false,
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 3,
+          tension: 0,
+          yAxisID: "y",
+        },
+        {
+          label: "Temperatura do Ar (°C)",
           data: dadosTemp,
-          borderColor: "#e76f51",
+          borderColor: "#00a8ff",
+          fill: false,
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 3,
+          tension: 0,
+          yAxisID: "y1",
+        },
+        {
+          label: "Temperatura Externa (°C)",
+          data: dadosTempExterna,
+          borderColor: "#ff00b8",
+          fill: false,
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 3,
+          tension: 0,
           yAxisID: "y1",
         },
       ],
     },
     options: {
       responsive: true,
+      layout: {
+        padding: {
+          left: 16,
+          right: 16,
+        },
+      },
+      plugins: {
+        htmlLegend: {
+          containerID: "historyLegend",
+        },
+        legend: {
+          display: false,
+        },
+      },
       scales: {
         y: { position: "left", beginAtZero: true, max: 100 },
         y1: { position: "right", beginAtZero: true },

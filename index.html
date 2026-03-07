@@ -35,39 +35,27 @@
         </header>
 
         <section class="grid-cards dashboard-cards">
-            <div class="card dashboard-card">
-                <h3>Umidade do Solo</h3>
-                <div class="value-container">
-                    <span id="solo-estufa" class="value green">--%</span>
-                    <small>Estufa</small>
-                </div>
-                <div class="value-container">
-                    <span id="solo-externo" class="value blue">--%</span>
-                    <small>Externo</small>
+            <div class="card dashboard-card sensor-card soil-card">
+                <h3><span class="card-icon">🌱</span>Umidade do Solo</h3>
+                <span id="solo-estufa" class="value card-main-value">--%</span>
+                <div class="meter">
+                    <span id="solo-meter" class="meter-fill"></span>
                 </div>
             </div>
 
-            <div class="card dashboard-card">
-                <h3>Umidade do Ar</h3>
-                <div class="value-container">
-                    <span id="umid-ar-estufa" class="value green">--%</span>
-                    <small>Estufa</small>
-                </div>
-                <div class="value-container">
-                    <span id="umid-ar-externo" class="value blue">--%</span>
-                    <small>Externo</small>
+            <div class="card dashboard-card sensor-card air-card">
+                <h3><span class="card-icon">💧</span>Umidade do Ar</h3>
+                <span id="umid-ar-estufa" class="value card-main-value">--%</span>
+                <div class="meter">
+                    <span id="umid-ar-meter" class="meter-fill"></span>
                 </div>
             </div>
 
-            <div class="card dashboard-card">
-                <h3>Temperatura do Ar</h3>
-                <div class="value-container">
-                    <span id="temp-estufa" class="value">--°C</span>
-                    <small>Estufa</small>
-                </div>
-                <div class="value-container">
-                    <span id="temp-externo" class="value">--°C</span>
-                    <small>Externo</small>
+            <div class="card dashboard-card sensor-card temp-card">
+                <h3><span class="card-icon thermo-icon" aria-hidden="true"></span>Temperatura</h3>
+                <span id="temp-estufa" class="value card-main-value">--°C</span>
+                <div class="meter">
+                    <span id="temp-meter" class="meter-fill"></span>
                 </div>
             </div>
         </section>

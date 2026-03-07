@@ -49,12 +49,31 @@ const mainChart = new Chart(ctx, {
 });
 
 function atualizarInterface(dados) {
-  document.getElementById("solo-estufa").innerText = `${dados.soloEstufa}%`;
-  document.getElementById("solo-externo").innerText = `${dados.soloExterno}%`;
-  document.getElementById("temp-estufa").innerText = `${dados.tempEstufa}°C`;
-  document.getElementById("temp-externo").innerText = `${dados.tempExterno}°C`;
-  document.getElementById("umid-ar-estufa").innerText = `${dados.umidArEstufa}%`;
-  document.getElementById("umid-ar-externo").innerText = `${dados.umidArExterno}%`;
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = value;
+  };
+  const setMeter = (id, value, max = 100) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const pct = Math.max(0, Math.min((Number(value) / max) * 100, 100));
+    el.style.width = `${pct}%`;
+  };
+
+  setText("solo-estufa", `${dados.soloEstufa}%`);
+  setText("umid-ar-estufa", `${dados.umidArEstufa}%`);
+  setText("temp-estufa", `${dados.tempEstufa}°C`);
+
+  setText("solo-sub", `Estufa ${dados.soloEstufa}% | Externo ${dados.soloExterno}%`);
+  setText(
+    "umid-ar-sub",
+    `Estufa ${dados.umidArEstufa}% | Externo ${dados.umidArExterno}%`
+  );
+  setText("temp-sub", `Estufa ${dados.tempEstufa}°C | Externo ${dados.tempExterno}°C`);
+
+  setMeter("solo-meter", dados.soloEstufa, 100);
+  setMeter("umid-ar-meter", dados.umidArEstufa, 100);
+  setMeter("temp-meter", dados.tempEstufa, 50);
 
   const horaAtual = dados.horario;
 
