@@ -49,12 +49,45 @@ body {
     color: white;
     text-decoration: none;
     font-size: 0.9rem;
-    transition: 0.3s;
+    transition: color 0.25s ease, background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+    padding: 8px 12px;
+    border-radius: 999px;
 }
 
 .nav-links a:hover,
 .nav-links a.active {
     color: #74c69d;
+}
+
+.nav-links a:hover {
+    background: rgba(116, 198, 157, 0.12);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
+}
+
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 4px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #74c69d, #95d5b2);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.25s ease;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    transform: scaleX(1);
+}
+
+.nav-links a.active {
+    background: rgba(116, 198, 157, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(149, 213, 178, 0.35);
 }
 
 /* container */
