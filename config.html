@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EcoComp | Configurações</title>
-    <link rel="icon" type="image/png" href="img/logo.png"> <!-- favicon do site -->    
+    <link rel="icon" type="image/png" href="img/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -31,54 +31,66 @@
             <p>Gerencie os atuadores e defina os parâmetros de automação</p>
         </header>
 
-        <h2 style="margin-bottom: 1rem; color: #1b4332;">Acionamento Manual</h2>
-        <section class="grid-cards">
-            
-            <div class="card">
-                <h3>Irrigação</h3>
-                <div class="status-bomba">
-                    <p>Bomba d'água:</p>
-                    <span id="status-bomba" class="badge off">DESLIGADA</span>
+        <h2 style="margin-bottom: 1rem; color: #1b4332;">Atuação Manual</h2>
+        <section class="grid-cards config-cards">
+            <div class="card config-actuator-card config-irrigacao">
+                <h3><span class="cfg-icon cfg-icon-irrigacao" aria-hidden="true"></span>Irrigação</h3>
+                <p class="cfg-subtitle">Bomba D'água</p>
+                <div class="cfg-status-row">
+                    <span id="status-bomba" class="status-pill on">Ativado</span>
                 </div>
-                <button class="btn-manual" onclick="toggleDispositivo('bomba')">Alternar Bomba</button>
+                <button class="btn-manual btn-irrigacao" onclick="toggleDispositivo('bomba')">Ativar Bomba</button>
             </div>
 
-            <div class="card">
-                <h3>Aquecimento</h3>
-                <div class="status-bomba">
-                    <p>Lâmpada Incandescente:</p>
-                    <span id="status-lampada" class="badge off">DESLIGADA</span>
+            <div class="card config-actuator-card config-resfriamento">
+                <h3><span class="cfg-icon cfg-icon-resfriamento" aria-hidden="true"></span>Resfriamento</h3>
+                <p class="cfg-subtitle">Ventoinha (Cooler)</p>
+                <div class="cfg-status-row">
+                    <span id="status-ventoinha" class="status-pill off">Desligado</span>
                 </div>
-                <button class="btn-manual" onclick="toggleDispositivo('lampada')">Alternar Lâmpada</button>
+                <button class="btn-manual btn-resfriamento" onclick="toggleDispositivo('ventoinha')">Ativar Ventoinha</button>
             </div>
 
-            <div class="card">
-                <h3>Resfriamento</h3>
-                <div class="status-bomba">
-                    <p>Ventoinha (Cooler):</p>
-                    <span id="status-ventoinha" class="badge off">DESLIGADA</span>
+            <div class="card config-actuator-card config-aquecimento">
+                <h3><span class="cfg-icon">💡</span>Aquecimento</h3>
+                <p class="cfg-subtitle">Lâmpada Incandescente</p>
+                <div class="cfg-status-row">
+                    <span id="status-lampada" class="status-pill off">Desligado</span>
                 </div>
-                <button class="btn-manual" onclick="toggleDispositivo('ventoinha')">Alternar Ventoinha</button>
+                <button class="btn-manual btn-aquecimento" onclick="toggleDispositivo('lampada')">Ativar Lâmpada</button>
             </div>
-
         </section>
 
         <h2 style="margin-bottom: 1rem; color: #1b4332; margin-top: 2rem;">Limites de Automação</h2>
-        <section class="card" style="text-align: left;">
+        <section class="card config-rules-card" style="text-align: left;">
             <form id="form-config" class="config-form">
-                <div class="input-group">
-                    <label>Umidade mínima do solo para irrigar (%):</label>
-                    <input type="number" id="threshold-solo" value="40" min="0" max="100">
-                </div>
-                
-                <div class="input-group">
-                    <label>Temperatura máxima para resfriar (°C):</label>
-                    <input type="number" id="threshold-temp-max" value="32" min="0" max="50">
+                <p class="rules-title">Regras para monitoramento e <strong>controle automático</strong>:</p>
+
+                <div class="rule-row rule-soil">
+                    <label for="threshold-solo" class="rule-label"><span class="rule-icon">🌿</span>Umidade mínima do solo para irrigar (%)</label>
+                    <input type="range" id="threshold-solo-range" min="0" max="100" value="40" class="rule-range">
+                    <div class="rule-value">
+                        <input type="number" id="threshold-solo" value="40" min="0" max="100">
+                        <span>%</span>
+                    </div>
                 </div>
 
-                <div class="input-group">
-                    <label>Temperatura mínima para aquecer (°C):</label>
-                    <input type="number" id="threshold-temp-min" value="18" min="0" max="50">
+                <div class="rule-row rule-cool">
+                    <label for="threshold-temp-max" class="rule-label"><span class="rule-icon">❄</span>Temperatura máxima para resfriar (°C)</label>
+                    <input type="range" id="threshold-temp-max-range" min="0" max="50" value="32" class="rule-range">
+                    <div class="rule-value">
+                        <input type="number" id="threshold-temp-max" value="32" min="0" max="50">
+                        <span>°C</span>
+                    </div>
+                </div>
+
+                <div class="rule-row rule-heat">
+                    <label for="threshold-temp-min" class="rule-label"><span class="rule-icon rule-icon-temp" aria-hidden="true"></span>Temperatura mínima para aquecer (°C)</label>
+                    <input type="range" id="threshold-temp-min-range" min="0" max="50" value="18" class="rule-range">
+                    <div class="rule-value">
+                        <input type="number" id="threshold-temp-min" value="18" min="0" max="50">
+                        <span>°C</span>
+                    </div>
                 </div>
 
                 <button type="button" class="btn-manual" style="margin-top: 1rem; background: #2d6a4f;" onclick="salvarConfig()">Salvar Parâmetros</button>
@@ -86,23 +98,29 @@
         </section>
     </main>
 
-        <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <div class="footer-brand">
-                    <img src="img/logo.png" alt="Logo Pequeno EcoComp" class="footer-logo-img">
-                    <p class="footer-title">Eco<span>Comp &copy;</span></p>
-                </div>
+    <footer class="footer">
+        <div class="footer-content footer-cards">
+            <div class="footer-card">
+                <span class="footer-shine" aria-hidden="true"></span>
+                <h4 class="footer-brand-title">
+                    <img src="img/logo.png" alt="Logo EcoComp" class="footer-brand-icon">
+                    <span>Eco<span>Comp</span> <span class="footer-copy">&copy;</span></span>
+                </h4>
                 <p>Projeto em Engenharia de Computação II</p>
             </div>
 
-            <div class="footer-section">
-                <p><strong>Orientador:</strong> Prof. Me. Hélio Esperidião</p>
-                <p>Monitoramento IoT - 2026</p>
-                <p><b>Desenvolvido por: </b>
-                <p><a href="mailto:ltrigo@univap.br" class="footer-link">Laura Trigo</a></p> <p><a
-                        href="mailto:josielytoledo@univap.br" class="footer-link">Josiely Toledo</a></p>
-                </p>
+            <div class="footer-card">
+                <span class="footer-shine" aria-hidden="true"></span>
+                <h4><span class="footer-icon-monitor" aria-hidden="true"></span>Orientador</h4>
+                <p>Prof. Me. Hélio Esperidião</p>
+                <p>📡 Monitoramento IoT - 2026</p>
+            </div>
+
+            <div class="footer-card">
+                <span class="footer-shine" aria-hidden="true"></span>
+                <h4>👥 Desenvolvido por</h4>
+                <p><a href="mailto:ltrigo@univap.br" class="footer-link">Laura Trigo</a></p>
+                <p><a href="mailto:josielytoledo@univap.br" class="footer-link">Josiely Toledo</a></p>
             </div>
         </div>
     </footer>

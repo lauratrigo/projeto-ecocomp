@@ -60,11 +60,32 @@ app.post("/api/data", async (req,res)=>{
 // rota para buscar dados
 app.get("/api/data", async (req,res)=>{
   try {
+    const maxLimit = 10000;
+    const rawLimit = Number(req.query.limit);
+    const limit = Number.isFinite(rawLimit)
+      ? Math.min(Math.max(rawLimit, 1), maxLimit)
+      : 500;
+
+    const query = {};
+    const days = Number(req.query.days);
+    const from = req.query.from ? new Date(req.query.from) : null;
+    const to = req.query.to ? new Date(req.query.to) : null;
+
+    if (Number.isFinite(days) && days > 0) {
+      const start = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+      query.createdAt = { ...(query.createdAt || {}), $gte: start };
+    }
+    if (from instanceof Date && !Number.isNaN(from.getTime())) {
+      query.createdAt = { ...(query.createdAt || {}), $gte: from };
+    }
+    if (to instanceof Date && !Number.isNaN(to.getTime())) {
+      query.createdAt = { ...(query.createdAt || {}), $lte: to };
+    }
 
     const data = await Reading
-      .find()
+      .find(query)
       .sort({createdAt:-1})
-      .limit(10);
+      .limit(limit);
 
     res.json(data);
 

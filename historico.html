@@ -32,57 +32,93 @@
             <p>Análise comparativa dos últimos 30 dias</p>
         </header>
 
-        <section class="filter-bar">
-            <div class="filter-group">
-                <label for="periodo">Período:</label>
-                <select id="periodo" onchange="carregarDadosHistoricos()">
-                    <option value="7">Últimos 7 dias</option>
-                    <option value="15">Últimos 15 dias</option>
-                    <option value="30" selected>Últimos 30 dias</option>
-                </select>
+        <section class="history-toolbar history-effect-card">
+            <div class="history-period-tabs">
+                <button type="button" class="period-tab" data-period="1">Últimas 24h</button>
+                <button type="button" class="period-tab" data-period="7">Últimos 7 dias</button>
+                <button type="button" class="period-tab active" data-period="30">Últimos 30 dias</button>
+                <button type="button" class="period-tab" data-period="custom">Personalizado</button>
             </div>
-            <button class="btn-export" onclick="exportarCSV()">Exportar Relatório (CSV)</button>
+            <div class="history-toolbar-actions">
+                <div class="sensor-select">
+                    <button type="button" id="sensor-toggle" class="sensor-toggle-btn">Selecione os sensores</button>
+                    <div id="sensor-menu" class="sensor-menu hidden">
+                        <p class="sensor-menu-title">Selecione os sensores:</p>
+                        <label><input type="checkbox" id="sensor-soil" checked> Sensor de umidade do solo (%)</label>
+                        <label><input type="checkbox" id="sensor-air" checked> Sensor de umidade do ar (%)</label>
+                        <label><input type="checkbox" id="sensor-temp" checked> Sensor de temperatura do ar (°C)</label>
+                    </div>
+                </div>
+                <div class="export-select">
+                    <button type="button" id="export-toggle" class="btn-export">Exportar Relatório</button>
+                    <div id="export-menu" class="export-menu hidden">
+                        <button type="button" onclick="exportarImagem()">Imagem</button>
+                        <button type="button" onclick="exportarPDF()">PDF</button>
+                        <button type="button" onclick="exportarCSV()">CSV</button>
+                        <button type="button" onclick="exportarExcel()">Excel</button>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <section class="chart-section history-chart-section">
-            <div id="historyLegend" class="history-legend"></div>
+        <section class="chart-section history-chart-section history-effect-card">
             <canvas id="historyChart"></canvas>
         </section>
 
-        <section class="table-section">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Data/Hora</th>
-                        <th>Solo (Estufa)</th>
-                        <th>Solo (Ext.)</th>
-                        <th>Ar (Estufa)</th>
-                        <th>Ar (Ext.)</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                    </tbody>
-            </table>
+        <section class="table-section history-effect-card history-table-scroll">
+            <div class="history-table-header">
+                <h2>Últimas Medições</h2>
+                <div class="history-table-controls">
+                    <div class="history-mini-tabs">
+                        <button type="button" class="period-tab period-tab-mini" data-period="1">Últimas 24h</button>
+                        <button type="button" class="period-tab period-tab-mini" data-period="7">Últimos 7 dias</button>
+                        <button type="button" class="period-tab period-tab-mini active" data-period="30">Últimos 30 dias</button>
+                        <button type="button" class="period-tab period-tab-mini" data-period="custom">Personalizado</button>
+                    </div>
+                    <div class="history-export-group">
+                    </div>
+                </div>
+            </div>
+            <div class="history-table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Umidade do Solo (%)</th>
+                            <th>Umidade do Ar (%)</th>
+                            <th>Temperatura do Ar (°C)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        </tbody>
+                </table>
+            </div>
         </section>
     </main>
 
-        <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <div class="footer-brand">
-                    <img src="img/logo.png" alt="Logo Pequeno EcoComp" class="footer-logo-img">
-                    <p class="footer-title">Eco<span>Comp &copy;</span></p>
-                </div>
+    <footer class="footer">
+        <div class="footer-content footer-cards">
+            <div class="footer-card">
+                <span class="footer-shine" aria-hidden="true"></span>
+                <h4 class="footer-brand-title">
+                    <img src="img/logo.png" alt="Logo EcoComp" class="footer-brand-icon">
+                    <span>Eco<span>Comp</span> <span class="footer-copy">&copy;</span></span>
+                </h4>
                 <p>Projeto em Engenharia de Computação II</p>
             </div>
 
-            <div class="footer-section">
-                <p><strong>Orientador:</strong> Prof. Me. Hélio Esperidião</p>
-                <p>Monitoramento IoT - 2026</p>
-                <p><b>Desenvolvido por: </b>
-                <p><a href="mailto:ltrigo@univap.br" class="footer-link">Laura Trigo</a></p> <p><a
-                        href="mailto:josielytoledo@univap.br" class="footer-link">Josiely Toledo</a></p>
-                </p>
+            <div class="footer-card">
+                <span class="footer-shine" aria-hidden="true"></span>
+                <h4><span class="footer-icon-monitor" aria-hidden="true"></span>Orientador</h4>
+                <p>Prof. Me. Hélio Esperidião</p>
+                <p>📡 Monitoramento IoT - 2026</p>
+            </div>
+
+            <div class="footer-card">
+                <span class="footer-shine" aria-hidden="true"></span>
+                <h4>👥 Desenvolvido por</h4>
+                <p><a href="mailto:ltrigo@univap.br" class="footer-link">Laura Trigo</a></p>
+                <p><a href="mailto:josielytoledo@univap.br" class="footer-link">Josiely Toledo</a></p>
             </div>
         </div>
     </footer>
