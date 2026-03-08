@@ -31,8 +31,8 @@ const mainChart = new Chart(ctx, {
       {
         label: "Temperatura do Ar (°C)",
         data: dadosTempArEstufa,
-        borderColor: "#f77f00",
-        backgroundColor: "rgba(247, 127, 0, 0.1)",
+        borderColor: "#ee6f13",
+        backgroundColor: "rgba(238, 111, 19, 0.12)",
         fill: true,
         tension: 0.3,
       },
@@ -137,7 +137,7 @@ function normalizarLeitura(item) {
 
 async function buscarDadosDoServidor() {
   try {
-    const res = await fetch(`${API_BASE}/api/data`);
+    const res = await fetch(`${API_BASE}/api/data?limit=1`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const lista = await res.json();

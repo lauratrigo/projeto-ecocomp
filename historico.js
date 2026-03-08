@@ -27,10 +27,10 @@ function normalizar(item) {
 }
 
 async function carregarDadosHistoricos() {
-  const limit = Math.max(periodoAtualDias * 24, 24);
+  const limit = 10000;
 
   try {
-    const res = await fetch(`${API_BASE}/api/data?limit=${limit}`);
+    const res = await fetch(`${API_BASE}/api/data?days=${periodoAtualDias}&limit=${limit}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const lista = (await res.json()).map(normalizar).reverse();
@@ -103,7 +103,7 @@ function atualizarGrafico(lista) {
         {
           label: "Temperatura do Ar (°C)",
           data: dadosTemp,
-          borderColor: "#d86a00",
+          borderColor: "#ee6f13",
           backgroundColor: "transparent",
           fill: false,
           borderWidth: 2.4,

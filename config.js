@@ -2,7 +2,7 @@
   localStorage.getItem("api_base_url") || "https://projeto-ecocomp.onrender.com";
 
 const estados = {
-  bomba: true,
+  bomba: false,
   lampada: false,
   ventoinha: false,
 };
@@ -11,6 +11,12 @@ const labels = {
   bomba: "Bomba",
   lampada: "Lâmpada",
   ventoinha: "Ventoinha",
+};
+
+const acaoEmAndamento = {
+  bomba: false,
+  lampada: false,
+  ventoinha: false,
 };
 
 function atualizarEstadoVisual(tipo) {
@@ -23,7 +29,10 @@ function atualizarEstadoVisual(tipo) {
 
   const botao = status.closest(".config-actuator-card")?.querySelector("button");
   if (botao) {
-    botao.innerText = `${ativo ? "Desativar" : "Ativar"} ${labels[tipo]}`;
+    botao.innerText = acaoEmAndamento[tipo]
+      ? "Enviando..."
+      : `${ativo ? "Desativar" : "Ativar"} ${labels[tipo]}`;
+    botao.disabled = acaoEmAndamento[tipo];
   }
 }
 
@@ -67,14 +76,20 @@ async function enviarComando(tipo, ativo) {
 }
 
 async function toggleDispositivo(tipo) {
+  if (acaoEmAndamento[tipo]) return;
+
+  acaoEmAndamento[tipo] = true;
   estados[tipo] = !estados[tipo];
+  atualizarEstadoVisual(tipo);
 
   try {
     await enviarComando(tipo, estados[tipo]);
-    atualizarEstadoVisual(tipo);
   } catch (erro) {
     estados[tipo] = !estados[tipo];
     alert(`Falha ao enviar comando para ${tipo}: ${erro.message}`);
+  } finally {
+    acaoEmAndamento[tipo] = false;
+    atualizarEstadoVisual(tipo);
   }
 }
 
@@ -82,6 +97,15 @@ async function salvarConfig() {
   const solo = Number(document.getElementById("threshold-solo").value);
   const tMax = Number(document.getElementById("threshold-temp-max").value);
   const tMin = Number(document.getElementById("threshold-temp-min").value);
+
+  if ([solo, tMax, tMin].some((v) => Number.isNaN(v))) {
+    alert("Preencha todos os parâmetros com valores válidos.");
+    return;
+  }
+  if (tMin >= tMax) {
+    alert("A temperatura mínima deve ser menor que a temperatura máxima.");
+    return;
+  }
 
   try {
     const res = await fetch(`${API_BASE}/api/config`, {
@@ -91,9 +115,56 @@ async function salvarConfig() {
     });
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    alert("Parametros atualizados com sucesso.");
+    alert("Parâmetros atualizados com sucesso.");
   } catch (erro) {
-    alert(`Falha ao salvar configuracao: ${erro.message}`);
+    alert(`Falha ao salvar configuração: ${erro.message}`);
+  }
+}
+
+async function carregarEstadoInicial() {
+  try {
+    const res = await fetch(`${API_BASE}/api/actuators`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const base = Array.isArray(data) ? data[0] : data;
+    if (!base || typeof base !== "object") return;
+
+    if (typeof base.bomba === "boolean") estados.bomba = base.bomba;
+    if (typeof base.ventoinha === "boolean") estados.ventoinha = base.ventoinha;
+    if (typeof base.lampada === "boolean") estados.lampada = base.lampada;
+  } catch (_erro) {
+    // Mantém valores locais caso a API não tenha endpoint de leitura.
+  } finally {
+    ["bomba", "ventoinha", "lampada"].forEach(atualizarEstadoVisual);
+  }
+}
+
+async function carregarConfigInicial() {
+  try {
+    const res = await fetch(`${API_BASE}/api/config`);
+    if (!res.ok) return;
+    const cfg = await res.json();
+    if (!cfg || typeof cfg !== "object") return;
+
+    const solo = Number(cfg.soloMin);
+    const tMax = Number(cfg.tempMax);
+    const tMin = Number(cfg.tempMin);
+
+    if (!Number.isNaN(solo)) document.getElementById("threshold-solo").value = String(solo);
+    if (!Number.isNaN(tMax)) document.getElementById("threshold-temp-max").value = String(tMax);
+    if (!Number.isNaN(tMin)) document.getElementById("threshold-temp-min").value = String(tMin);
+
+    const syncNumberToRange = (numberId, rangeId) => {
+      const number = document.getElementById(numberId);
+      const range = document.getElementById(rangeId);
+      if (!number || !range) return;
+      range.value = number.value;
+    };
+    syncNumberToRange("threshold-solo", "threshold-solo-range");
+    syncNumberToRange("threshold-temp-max", "threshold-temp-max-range");
+    syncNumberToRange("threshold-temp-min", "threshold-temp-min-range");
+  } catch (_erro) {
+    // Mantém valores default caso a API não tenha endpoint de leitura.
   }
 }
 
@@ -104,3 +175,5 @@ window.salvarConfig = salvarConfig;
 sincronizarCampos("threshold-solo", "threshold-solo-range");
 sincronizarCampos("threshold-temp-max", "threshold-temp-max-range");
 sincronizarCampos("threshold-temp-min", "threshold-temp-min-range");
+carregarEstadoInicial();
+carregarConfigInicial();
