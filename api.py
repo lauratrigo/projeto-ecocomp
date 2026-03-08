@@ -87,20 +87,24 @@ async def pegar_historico(days: int = Query(30)):
 
 # Rota para o site enviar o comando (Site -> API -> Banco)
 @app.post("/api/actuators")
-async def controlar_atuadores(data: AtuadorData):
+async def controlar_atuadores(data: dict): # Mudamos de AtuadorData para dict para ser mais flexível
     try:
-        # Converte True/False para 1/0 se preferir, ou guarda como boolean
-        valor_binario = 1 if data.ativo else 0
+        tipo = data.get("tipo")
+        ativo = data.get("ativo")
         
-        # Salva na coleção 'status' do banco ecocomp
+        # Converte para 1 ou 0
+        valor_binario = 1 if ativo else 0
+        
+        # Tenta gravar no banco
         db.status.update_one(
             {"id": "atuadores"},
-            {"$set": {data.tipo: valor_binario, "ultima_atualizacao": datetime.utcnow()}},
+            {"$set": {tipo: valor_binario, "ultima_atualizacao": datetime.utcnow()}},
             upsert=True
         )
         
-        return {"status": "sucesso", "dispositivo": data.tipo, "valor": valor_binario}
+        return {"status": "sucesso", "valor": valor_binario}
     except Exception as e:
+        print(f"ERRO NO SERVIDOR: {e}") # Isso vai aparecer no LOG do Render
         raise HTTPException(status_code=500, detail=str(e))
 
 # Rota para o ESP32 ler o que deve fazer (ESP32 -> API -> Banco)
