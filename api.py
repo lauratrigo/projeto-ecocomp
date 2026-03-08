@@ -85,28 +85,37 @@ async def pegar_historico(days: int = Query(30)):
         })
     return dados_formatados
 
-# 3. Controle de Atuadores (Lâmpada, Bomba, Ventoinha)
+# Rota para o site enviar o comando (Site -> API -> Banco)
 @app.post("/api/actuators")
 async def controlar_atuadores(data: AtuadorData):
-    # Aqui você pode salvar o estado atual em uma coleção 'status'
-    db.status.update_one(
-        {"id": "estado_atual"},
-        {"$set": {data.tipo: data.ativo, "last_update": datetime.utcnow()}},
-        upsert=True
-    )
-    return {"status": "comando_enviado", "dispositivo": data.tipo, "valor": data.ativo}
+    try:
+        # Converte True/False para 1/0 se preferir, ou guarda como boolean
+        valor_binario = 1 if data.ativo else 0
+        
+        # Salva na coleção 'status' do banco ecocomp
+        db.status.update_one(
+            {"id": "atuadores"},
+            {"$set": {data.tipo: valor_binario, "ultima_atualizacao": datetime.utcnow()}},
+            upsert=True
+        )
+        
+        return {"status": "sucesso", "dispositivo": data.tipo, "valor": valor_binario}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+# Rota para o ESP32 ler o que deve fazer (ESP32 -> API -> Banco)
 @app.get("/api/actuators")
 async def buscar_estado_atuadores():
-    estado = db.status.find_one({"id": "estado_atual"})
+    estado = db.status.find_one({"id": "atuadores"})
     if not estado:
-        return {"bomba": False, "lampada": False, "ventoinha": False}
+        return {"bomba": 0, "lampada": 0, "ventoinha": 0}
+    
+    # Retorna os valores (0 ou 1) para o ESP32 ou para o Site
     return {
-        "bomba": estado.get("bomba", False),
-        "lampada": estado.get("lampada", False),
-        "ventoinha": estado.get("ventoinha", False)
+        "bomba": estado.get("bomba", 0),
+        "lampada": estado.get("lampada", 0),
+        "ventoinha": estado.get("ventoinha", 0)
     }
-
 # 4. Configurações de Threshold
 @app.post("/api/config")
 async def salvar_config(data: ConfigData):
