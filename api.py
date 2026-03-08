@@ -2,9 +2,19 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from pymongo import MongoClient
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware # Importe isso
 import os
 
 app = FastAPI()
+
+# Configuração do CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # Em produção, o ideal é colocar a URL do seu site aqui
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # conexão MongoDB
 MONGO_DETAILS = os.getenv("MONGO_URL")
