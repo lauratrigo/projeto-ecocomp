@@ -76,17 +76,17 @@ async def pegar_historico(days: int = Query(30)):
     limite_data = datetime.utcnow() - timedelta(days=days)
     
     # Busca os últimos 1000 registros para não travar o gráfico
-    cursor = collection.find({"data_hora": {"$gte": limite_data}}).sort("data_hora", -1).limit(1000)
+    cursor = collection.find({"createdAt": {"$gte": limite_data}}).sort("createdAt", -1).limit(1000)
     
     dados_formatados = []
     for d in cursor:
         dados_formatados.append({
-            "createdAt": d["data_hora"].isoformat(),
-            "soil": d.get("umidadeSolo", 0),
-            "airHumidity": d.get("umidadeAr", 0),
-            "airTemp": d.get("temperatura", 0),
-            "soilExternal": d.get("umidadeSolo", 0) * 0.9, # Exemplo de dado externo
-            "tempExternal": d.get("temperatura", 0) - 2    # Exemplo de dado externo
+            dados_formatados.append({
+                "createdAt": d["createdAt"].isoformat(),
+                "soil": d.get("soil", 0),
+                "airHumidity": d.get("airHumidity", 0),
+                "airTemp": d.get("airTemp", 0)
+            })
         })
     return dados_formatados
 
