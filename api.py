@@ -52,6 +52,7 @@ async def home():
 # 1. Receber dados do ESP32
 @app.post("/dados")
 async def receber_dados(data: SensorData):
+    print(f"Recebendo dados: {data}") # Isso vai aparecer no log
     documento = {
         "temperatura": data.temperatura,
         "umidadeAr": data.umidadeAr,
@@ -59,10 +60,14 @@ async def receber_dados(data: SensorData):
         "data_hora": datetime.utcnow()
     }
     try:
+        # Tenta conectar e inserir
         resultado = collection.insert_one(documento)
+        print("Inserção no MongoDB com sucesso!")
         return {"status": "sucesso", "id": str(resultado.inserted_id)}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # ESTA LINHA É A MAIS IMPORTANTE:
+        print(f"ERRO CRÍTICO NO MONGODB: {str(e)}") 
+        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
 
 # 2. Histórico para o Gráfico (Rota que o JS chama)
 @app.get("/api/data")
