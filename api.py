@@ -18,7 +18,7 @@ app.add_middleware(
 )
 
 # --- CONEXÃO MONGODB ---
-MONGO_DETAILS = os.getenv("MONGO_URL")
+MONGO_DETAILS = os.getenv("MONGO_URI")
 if not MONGO_DETAILS:
     # Apenas para teste local se a variável de ambiente não estiver definida
     MONGO_DETAILS = "mongodb://localhost:27017"
