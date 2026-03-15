@@ -31,9 +31,11 @@ const SensorSchema = new mongoose.Schema({
 // leituras completas
 const ReadingSchema = new mongoose.Schema({
 
-  estufa: SensorSchema,
-  externo: SensorSchema,
-
+  soil: Number,           // interno
+  airHumidity: Number,    // interno
+  airTemp: Number,        // interno
+  soilExternal: Number,   // externo
+  tempExternal: Number,   // externo
   createdAt: {
     type: Date,
     default: Date.now
@@ -184,24 +186,22 @@ app.get("/api/config", async (req, res) => {
 // salvar leitura (ESP32 envia)
 app.post("/api/data", async (req, res) => {
   try {
-    const { estufa, externo } = req.body;
+    const { soil, airHumidity, airTemp, soilExternal, tempExternal } = req.body;
 
-    // Se o ESP enviar apenas um dos dois, o outro vira um objeto vazio para não quebrar o banco
     const data = new Reading({
-      estufa: {
-        soil: estufa?.soil ?? 0,
-        airHumidity: estufa?.airHumidity ?? 0,
-        airTemp: estufa?.airTemp ?? 0
-      },
-      externo: {
-        soil: externo?.soil ?? 0,
-        airHumidity: externo?.airHumidity ?? 0,
-        airTemp: externo?.airTemp ?? 0
-      }
+      soil,
+      airHumidity,
+      airTemp,
+      soilExternal: soilExternal ?? 0,
+      tempExternal: tempExternal ?? 0
     });
 
     await data.save();
-    res.json({ message: "dados salvos", data });
+
+    res.json({
+      message: "dados salvos",
+      data
+    });
   } catch (error) {
     console.error("Erro no POST:", error);
     res.status(500).json({ erro: "erro ao salvar dados" });
