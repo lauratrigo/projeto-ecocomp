@@ -208,57 +208,63 @@ app.post("/api/data", async (req, res) => {
   }
 });
 
-// app.get("/api/data", async (req, res) => {
-//   try {
-//     const limit = parseInt(req.query.limit) || 500;
-//     const data = await Reading.find().sort({ createdAt: -1 }).limit(limit);
-
-//     // DICA DE OURO: Vamos "achatar" o objeto antes de enviar para o front-end
-//     // Isso faz com que o front receba { soil, soilExternal... } e tudo volte a plotar!
-//     const dadosFormatados = data.map(item => ({
-//       createdAt: item.createdAt,
-//       soil: item.estufa?.soil || 0,
-//       airHumidity: item.estufa?.airHumidity || 0,
-//       airTemp: item.estufa?.airTemp || 0,
-//       soilExternal: item.externo?.soil || 0,
-//       airHumidityExternal: item.externo?.airHumidity || 0,
-//       tempExternal: item.externo?.airTemp || 0
-//     }));
-
-//     res.json(dadosFormatados);
-//   } catch (error) {
-//     res.status(500).json({ erro: "erro ao buscar dados" });
-//   }
-// });
-
-// histórico
 app.get("/api/data", async (req, res) => {
-
   try {
 
-    const maxLimit = 10000;
-    const rawLimit = Number(req.query.limit);
-
-    const limit = Number.isFinite(rawLimit)
-      ? Math.min(Math.max(rawLimit, 1), maxLimit)
-      : 500;
+    const limit = parseInt(req.query.limit) || 500;
 
     const data = await Reading
       .find()
       .sort({ createdAt: -1 })
       .limit(limit);
 
-    res.json(data);
+    const dadosFormatados = data.map(item => ({
+      createdAt: item.createdAt,
+
+      soil: item.estufa?.soil ?? 0,
+      airHumidity: item.estufa?.airHumidity ?? 0,
+      airTemp: item.estufa?.airTemp ?? 0,
+
+      soilExternal: item.externo?.soil ?? 0,
+      airHumidityExternal: item.externo?.airHumidity ?? 0,
+      tempExternal: item.externo?.airTemp ?? 0
+    }));
+
+    res.json(dadosFormatados);
 
   } catch (error) {
-
-    res.status(500).json({
-      erro: "erro ao buscar dados"
-    });
-
+    res.status(500).json({ erro: "erro ao buscar dados" });
   }
-
 });
+
+// histórico
+// app.get("/api/data", async (req, res) => {
+
+//   try {
+
+//     const maxLimit = 10000;
+//     const rawLimit = Number(req.query.limit);
+
+//     const limit = Number.isFinite(rawLimit)
+//       ? Math.min(Math.max(rawLimit, 1), maxLimit)
+//       : 500;
+
+//     const data = await Reading
+//       .find()
+//       .sort({ createdAt: -1 })
+//       .limit(limit);
+
+//     res.json(data);
+
+//   } catch (error) {
+
+//     res.status(500).json({
+//       erro: "erro ao buscar dados"
+//     });
+
+//   }
+
+// });
 
 /* ================================
    INICIAR SERVIDOR
