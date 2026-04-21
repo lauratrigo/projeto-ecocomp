@@ -1,31 +1,31 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("formForgot");
+  const form = document.getElementById("formForgot");
 
-    if (!form) return;
+  if (!form) return;
 
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        const email = form.querySelector("input").value;
+    const email = document.querySelector("#formForgot input").value;
 
-        try {
-            const res = await fetch("https://projeto-ecocomp-zuk4.onrender.com/api/forgot-password", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email })
-            });
+    try {
+      const res = await fetch("https://projeto-ecocomp-zuk4.onrender.com/api/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
 
-            const data = await res.json();
+      const data = await res.json();
 
-            if (res.ok) {
-                alert("Link enviado para seu e-mail!");
-            } else {
-                alert(data.erro || "Erro ao enviar link");
-            }
+      if (res.ok) {
+        alert("Link enviado para seu e-mail!");
+      } else {
+        alert(data.erro || "Erro ao enviar link");
+      }
 
-        } catch (err) {
-            console.error(err);
-            alert("Erro de conexão");
-        }
-    });
+    } catch (err) {
+      console.error(err);
+      alert("Erro de conexão");
+    }
+  });
 });
