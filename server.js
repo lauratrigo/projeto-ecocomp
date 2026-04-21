@@ -326,7 +326,6 @@ app.post("/api/forgot-password", async (req, res) => {
             expiresAt: new Date(Date.now() + 1000 * 60 * 15) // 15 min
         });
 
-        // aqui você mandaria e-mail (por enquanto só retorna link)
         const link = `https://lauratrigo.github.io/projeto-ecocomp/reset.html?token=${token}`;
 
         await sendResetEmail(email, token);
