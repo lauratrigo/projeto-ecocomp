@@ -1,15 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const nodemailer = require("nodemailer");
 
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
+require("dotenv").config();
+
+const { Resend } = require("resend");
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const app = express();
 app.use(cors());
@@ -286,6 +282,21 @@ app.post("/api/login", async (req, res) => {
     }
 });
 
+async function sendResetEmail(email, token) {
+    const link = `https://lauratrigo.github.io/projeto-ecocomp/reset.html?token=${token}`;
+
+    return resend.emails.send({
+        from: "EcoComp <onboarding@resend.dev>",
+        to: email,
+        subject: "Recuperação de senha",
+        html: `
+            <h2>Recuperação de senha</h2>
+            <p>Clique no link abaixo para redefinir sua senha:</p>
+            <a href="${link}">${link}</a>
+        `
+    });
+}
+
 app.get("/ativar", (req, res) => {
     const deviceId = req.query.device;
 
@@ -371,21 +382,4 @@ app.post("/api/reset-password", async (req, res) => {
     }
 });
 
-async function sendResetEmail(email, token) {
-    const link = `https://lauratrigo.github.io/projeto-ecocomp/reset.html?token=${token}`;
 
-    try {
-        await transporter.sendMail({
-            from: `EcoComp <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: "Recuperação de senha",
-            html: `
-                <h2>Recuperação de senha</h2>
-                <p>Clique no link abaixo:</p>
-                <a href="${link}">${link}</a>
-            `
-        });
-    } catch (err) {
-        console.error("Erro email:", err);
-    }
-}
