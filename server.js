@@ -4,9 +4,6 @@ const cors = require("cors");
 
 require("dotenv").config();
 
-const { Resend } = require("resend");
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -325,76 +322,26 @@ app.get("/ativar", (req, res) => {
     );
 });
 
-const PasswordResetSchema = new mongoose.Schema({
-    email: String,
-    token: String,
-    expiresAt: Date
-});
-
-const PasswordReset = mongoose.model("PasswordReset", PasswordResetSchema);
-
-const crypto = require("crypto");
-
-app.post("/api/forgot-password", async (req, res) => {
+app.post("/api/reset-password-direct", async (req, res) => {
     try {
-        const { email } = req.body;
+        const { email, newPassword } = req.body;
 
         const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ erro: "Usuário não encontrado" });
-        }
 
-        const token = crypto.randomBytes(32).toString("hex");
-
-        await PasswordReset.create({
-            email,
-            token,
-            expiresAt: new Date(Date.now() + 1000 * 60 * 15) // 15 min
-        });
-
-        const link = `https://lauratrigo.github.io/projeto-ecocomp/reset.html?token=${token}`;
-
-        await sendResetEmail(email, token);
-
-        res.json({ message: "Email enviado com sucesso" });
-
-    } catch (err) {
-        res.status(500).json({ erro: "Erro ao gerar reset" });
-    }
-});
-
-app.post("/api/reset-password", async (req, res) => {
-    try {
-        const { token, newPassword } = req.body;
-
-        const reset = await PasswordReset.findOne({ token });
-
-        if (!reset) {
-            return res.status(400).json({ erro: "Token inválido" });
-        }
-
-        if (reset.expiresAt < new Date()) {
-            return res.status(400).json({ erro: "Token expirado" });
-        }
-
-        const user = await User.findOne({ email: reset.email });
         if (!user) {
             return res.status(400).json({ erro: "Usuário não encontrado" });
         }
 
         const bcrypt = require("bcrypt");
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(newPassword, salt);
+        const hash = await bcrypt.hash(newPassword, 10);
 
+        user.password = hash;
         await user.save();
-
-        await PasswordReset.deleteOne({ token });
 
         res.json({ message: "Senha alterada com sucesso" });
 
     } catch (err) {
-        res.status(500).json({ erro: "Erro ao resetar senha" });
+        console.error(err);
+        res.status(500).json({ erro: "Erro ao alterar senha" });
     }
 });
-
-
