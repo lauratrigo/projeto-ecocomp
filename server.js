@@ -147,11 +147,13 @@ app.get("/api/config", async (req, res) => {
 app.post("/api/data", async (req, res) => {
     try {
         const {
+            deviceId,
             soil, airHumidity, airTemp,
             soilExternal, airHumidityExternal, tempExternal
         } = req.body;
 
         const data = new Reading({
+            deviceId, 
             soil: soil ?? 0,
             airHumidity: airHumidity ?? 0,
             airTemp: airTemp ?? 0,
@@ -163,7 +165,6 @@ app.post("/api/data", async (req, res) => {
         await data.save();
         res.json({ message: "dados salvos", data });
     } catch (error) {
-        console.error("Erro no POST:", error);
         res.status(500).json({ erro: "erro ao salvar dados" });
     }
 });
@@ -171,9 +172,14 @@ app.post("/api/data", async (req, res) => {
 // BUSCAR DADOS HISTÓRICOS
 app.get("/api/data", async (req, res) => {
     try {
+        const { deviceId } = req.query;
         const limit = parseInt(req.query.limit) || 500;
 
-        const data = await Reading.find()
+        if (!deviceId) {
+            return res.status(400).json({ erro: "deviceId não informado" });
+        }
+
+        const data = await Reading.find({ deviceId }) // 👈 filtra estufa
             .sort({ createdAt: -1 })
             .limit(limit);
 
