@@ -279,36 +279,6 @@ app.post("/api/login", async (req, res) => {
     }
 });
 
-async function sendResetEmail(email, token) {
-    const link = `https://lauratrigo.github.io/projeto-ecocomp/reset.html?token=${token}`;
-
-    const response = await resend.emails.send({
-        from: "EcoComp <alunounivapsjc@gmail.com>",
-        to: email,
-        subject: "Recuperação de senha",
-        html: `
-            <h2>Recuperação de senha</h2>
-            <a href="${link}">${link}</a>
-        `
-    });
-
-    console.log("RESEND RESPONSE:", response);
-
-    return response;
-}
-
-app.get("/test-email", async (req, res) => {
-    const response = await resend.emails.send({
-        from: "EcoComp <alunounivapsjc@gmail.com>",
-        to: "SEU_EMAIL@gmail.com",
-        subject: "Teste",
-        html: "<h1>Teste</h1>"
-    });
-
-    console.log(response);
-    res.json(response);
-});
-
 app.get("/ativar", (req, res) => {
     const deviceId = req.query.device;
 
