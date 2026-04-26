@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok) {
                 alert("Login realizado com sucesso!");
-                window.location.href = "index.html";
+                window.location.href = "home.html";
             } else {
                 alert(data.erro || "Erro ao fazer login");
             }

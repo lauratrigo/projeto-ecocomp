@@ -22,3 +22,18 @@ function togglePassword(button) {
         button.classList.remove("active");
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("formForgot");
+
+  if (!form) return;
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("emailForgot").value;
+
+    // redireciona pro reset com o email na URL
+    window.location.href = `reset.html?email=${email}`;
+  });
+});

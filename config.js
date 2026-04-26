@@ -46,13 +46,23 @@ async function toggleDispositivo(tipo) {
   if (acaoEmAndamento[tipo]) return;
 
   acaoEmAndamento[tipo] = true;
-  estados[tipo] = !estados[tipo];
-  atualizarEstadoVisual(tipo);
+
+  const novoEstado = !estados[tipo];
 
   try {
-    await enviarComando(tipo, estados[tipo]);
+    const resultado = await enviarComando(tipo, novoEstado);
+
+    estados[tipo] = novoEstado;
+
+    if (resultado?.actuators) {
+      estados.bomba = !!resultado.actuators.bomba;
+      estados.ventoinha = !!resultado.actuators.ventoinha;
+      estados.lampada = !!resultado.actuators.lampada;
+    }
+
+    atualizarEstadoVisual(tipo);
+
   } catch (erro) {
-    estados[tipo] = !estados[tipo];
     alert(`Falha ao enviar comando para ${tipo}: ${erro.message}`);
   } finally {
     acaoEmAndamento[tipo] = false;
@@ -90,6 +100,7 @@ async function salvarConfig() {
     alert(`Falha ao salvar configuração: ${erro.message}`);
   }
 }
+
 
 async function carregarConfigInicial() {
   try {
@@ -183,3 +194,5 @@ function logout() {
     // volta pro login
     window.location.href = "login.html";
 }
+
+setInterval(carregarEstadoInicial, 5000);

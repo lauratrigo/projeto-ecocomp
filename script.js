@@ -179,15 +179,18 @@ async function buscarDadosDoServidor() {
 
   try {
 
-    const res = await fetch(`${API_BASE}/api/data?limit=1`);
+    const deviceId = "estufa-001"; // ou vindo do localStorage
+
+    const res = await fetch(
+      `${API_BASE}/api/data?deviceId=${deviceId}&limit=1`
+    );
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const lista = await res.json();
 
-    if (!Array.isArray(lista) || lista.length === 0) return;
-
-    atualizarInterface(normalizarLeitura(lista[0]));
+    const dados = Array.isArray(lista) ? lista[0] : lista;
+    atualizarInterface(normalizarLeitura(dados));
 
   } catch (erro) {
 
@@ -202,10 +205,10 @@ setInterval(buscarDadosDoServidor, 5000);
 buscarDadosDoServidor();
 
 function logout() {
-    // limpa login salvo (se você usar depois)
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+  // limpa login salvo (se você usar depois)
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
 
-    // volta pro login
-    window.location.href = "login.html";
+  // volta pro login
+  window.location.href = "login.html";
 }

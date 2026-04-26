@@ -1,130 +1,71 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoComp | Dashboard IoT</title>
+    <title>Login | EcoComp</title>
     <link rel="icon" type="image/png" href="img/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="password-toggle.js"></script>
+    <script src="login.js" defer></script>
 </head>
 
-<body>
+<body class="login-page">
 
-    <nav class="navbar">
-        <a href="index.html" class="logo-link">
-            <div class="logo-container">
-                <img src="img/logo.png" class="logo-img">
-                <div class="logo">Eco<span>Comp</span></div>
+    <div class="login-header">
+        <div class="login-brand">
+            <div class="login-brand-top">
+                <img src="img/logo.png" alt="EcoComp" class="login-logo">
+                <h1>Eco<span>Comp</span></h1>
             </div>
-        </a>
 
-        <div class="nav-actions">
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">Dashboard</a></li>
-                <li><a href="historico.html">Histórico</a></li>
-                <li><a href="config.html">Configurações</a></li>
-            </ul>
-
-            <button class="logout-btn" onclick="logout()">Sair</button>
+            <p class="login-slogan">
+                Inteligência computacional aplicada ao monitoramento de ecossistemas.
+            </p>
         </div>
-    </nav>
 
-    <main class="container">
-        <header class="header-main">
-            <h1>Monitoramento em Tempo Real</h1>
-            <p>Comparação: Estufa vs. Ambiente Externo</p>
-        </header>
 
-        <section class="grid-cards dashboard-cards">
-            <div class="card dashboard-card sensor-card soil-card">
-                <h3><span class="card-icon">🌱</span>Umidade do Solo</h3>
-                <span id="solo-estufa" class="value card-main-value">--%</span>
-                <div class="meter">
-                    <span id="solo-meter" class="meter-fill"></span>
+        <main class="container auth-wrapper">
+            <div class="card auth-card">
+                <h2>Bem-vindo de volta!</h2>
+                <p>Faça login para acessar seu Dashboard.</p>
+
+                <form id="formLogin">
+                    <div class="auth-form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+                    </div>
+
+                    <div class="auth-form-group">
+                        <label for="senha">Senha</label>
+
+                        <div class="password-wrapper">
+                            <input type="password" id="senha" name="senha" placeholder="••••••••" required>
+
+                            <button type="button" class="toggle-password" onclick="togglePassword(this)"> <svg
+                                    viewBox="0 0 24 24" fill="none">
+                                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" stroke="currentColor"
+                                        stroke-width="2" />
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-btn">Entrar</button>
+                </form>
+
+                <div class="auth-links">
+                    Ainda não tem uma conta? <a href="cadastro.html">Cadastre-se aqui</a>
+                </div>
+                <div class="auth-links">
+                    <a href="forgot.html">Esqueci minha senha</a>
                 </div>
             </div>
+        </main>
 
-            <div class="card dashboard-card sensor-card air-card">
-                <h3><span class="card-icon">💧</span>Umidade do Ar</h3>
-                <span id="umid-ar-estufa" class="value card-main-value">--%</span>
-                <div class="meter">
-                    <span id="umid-ar-meter" class="meter-fill"></span>
-                </div>
-            </div>
-
-            <div class="card dashboard-card sensor-card temp-card">
-                <h3><span class="card-icon thermo-icon" aria-hidden="true"></span>Temperatura</h3>
-                <span id="temp-estufa" class="value card-main-value">--°C</span>
-                <div class="meter">
-                    <span id="temp-meter" class="meter-fill"></span>
-                </div>
-            </div>
-        </section>
-
-        <section class="grid-cards dashboard-cards">
-
-            <div class="card dashboard-card sensor-card soil-card">
-                <h3><span class="card-icon">🌱</span>Solo (Externo)</h3>
-                <span id="solo-externo" class="value card-main-value">--%</span>
-                <div class="meter">
-                    <span id="solo-externo-meter" class="meter-fill"></span>
-                </div>
-            </div>
-
-            <div class="card dashboard-card sensor-card air-card">
-                <h3><span class="card-icon">💧</span>Umidade do Ar (Externo)</h3>
-                <span id="umid-ar-externo" class="value card-main-value">--%</span>
-                <div class="meter">
-                    <span id="umid-ar-externo-meter" class="meter-fill"></span>
-                </div>
-            </div>
-
-            <div class="card dashboard-card sensor-card temp-card">
-                <h3><span class="card-icon thermo-icon"></span>Temperatura (Externo)</h3>
-                <span id="temp-externo" class="value card-main-value">--°C</span>
-                <div class="meter">
-                    <span id="temp-externo-meter" class="meter-fill"></span>
-                </div>
-            </div>
-
-        </section>
-
-        <section class="chart-section dashboard-main-chart">
-            <canvas id="mainChart"></canvas>
-        </section>
-    </main>
-
-    <footer class="footer">
-        <div class="footer-content footer-cards">
-            <div class="footer-card">
-                <span class="footer-shine" aria-hidden="true"></span>
-                <h4 class="footer-brand-title">
-                    <img src="img/logo.png" alt="Logo EcoComp" class="footer-brand-icon">
-                    <span>Eco<span>Comp</span> <span class="footer-copy">&copy;</span></span>
-                </h4>
-                <p>Projeto em Engenharia de Computação II</p>
-            </div>
-
-            <div class="footer-card">
-                <span class="footer-shine" aria-hidden="true"></span>
-                <h4><span class="footer-icon-monitor" aria-hidden="true"></span>Orientador</h4>
-                <p>Prof. Me. Hélio Esperidião</p>
-                <p> Monitoramento IoT - 2026</p>
-            </div>
-
-            <div class="footer-card">
-                <span class="footer-shine" aria-hidden="true"></span>
-                <h4>👥 Desenvolvido por</h4>
-                <p><a href="mailto:ltrigo@univap.br" class="footer-link">Laura Trigo</a></p>
-                <p><a href="mailto:josielytoledo@univap.br" class="footer-link">Josiely Toledo</a></p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="script.js"></script>
 </body>
 
 </html>
