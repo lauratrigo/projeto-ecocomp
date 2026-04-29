@@ -1,5 +1,5 @@
 ﻿const API_BASE =
-  localStorage.getItem("api_base_url") || "https://projeto-ecocomp.onrender.com";
+  localStorage.getItem("api_base_url") || "https://projeto-ecocomp-zuk4.onrender.com";
 
 let historyChart;
 let periodoAtualDias = 30;
@@ -29,9 +29,13 @@ function normalizar(item) {
 
 async function carregarDadosHistoricos() {
   const limit = 2000;
+  const deviceId = "estufa-001";
 
   try {
-    const res = await fetch(`${API_BASE}/api/data?days=${periodoAtualDias}&limit=${limit}`);
+    const res = await fetch(
+      `${API_BASE}/api/data?deviceId=${deviceId}&limit=${limit}`
+    );
+
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const listaOriginal = (await res.json()).map(normalizar);
@@ -47,14 +51,14 @@ async function carregarDadosHistoricos() {
 }
 
 function atualizarTabela(lista) {
-  const tbody = document.getElementById("table-body");
-  tbody.innerHTML = "";
+    const tbody = document.getElementById("table-body");
+    tbody.innerHTML = "";
 
-  for (const item of lista) {
+    for (const item of lista) {
 
-    const row = document.createElement("tr");
+      const row = document.createElement("tr");
 
-    row.innerHTML = `
+      row.innerHTML = `
       <td>${formatarData(item.createdAt)}</td>
 
       <td>${item.soil.toFixed(0)}%</td>
@@ -67,278 +71,278 @@ function atualizarTabela(lista) {
       <td>${item.tempExternal.toFixed(1)}°C</td>
     `;
 
-    tbody.appendChild(row);
-  }
-}
-
-function atualizarGrafico(lista) {
-  const labels = lista.map((x) => formatarData(x.createdAt));
-  const dadosSolo = lista.map((x) => x.soil);
-  const dadosSoloExterno = lista.map((x) => x.soilExternal);
-  const dadosUmidadeAr = lista.map((x) => x.airHumidity);
-  const dadosTemp = lista.map((x) => x.temp);
-  const dadosTempExterna = lista.map((x) => x.tempExternal);
-  const dadosUmidadeArExterna = lista.map((x) => x.airHumidityExternal);
-
-  const ctx = document.getElementById("historyChart").getContext("2d");
-
-  if (historyChart) {
-    historyChart.destroy();
+      tbody.appendChild(row);
+    }
   }
 
-  historyChart = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels,
-      datasets: [
+  function atualizarGrafico(lista) {
+    const labels = lista.map((x) => formatarData(x.createdAt));
+    const dadosSolo = lista.map((x) => x.soil);
+    const dadosSoloExterno = lista.map((x) => x.soilExternal);
+    const dadosUmidadeAr = lista.map((x) => x.airHumidity);
+    const dadosTemp = lista.map((x) => x.temp);
+    const dadosTempExterna = lista.map((x) => x.tempExternal);
+    const dadosUmidadeArExterna = lista.map((x) => x.airHumidityExternal);
 
-        // SOLO
-        {
-          label: "Solo Estufa (%)",
-          data: dadosSolo,
-          borderColor: "#2d6a4f",
-          backgroundColor: "rgba(45,106,79,0.1)",
-          fill: false,
-          borderWidth: 2.4,
-          pointRadius: 0,
-          pointHoverRadius: 2.5,
-          tension: 0,
-          yAxisID: "y",
-        },
-        {
-          label: "Solo Externo (%)",
-          data: dadosSoloExterno,
-          borderColor: "#74c69d",
-          backgroundColor: "rgba(116,198,157,0.1)",
-          fill: false,
-          borderWidth: 2.2,
-          pointRadius: 0,
-          pointHoverRadius: 2.5,
-          tension: 0,
-          yAxisID: "y",
-        },
+    const ctx = document.getElementById("historyChart").getContext("2d");
 
-        // UMIDADE
-        {
-          label: "Umidade Ar Estufa (%)",
-          data: dadosUmidadeAr,
-          borderColor: "#4895ef",
-          backgroundColor: "rgba(72,149,239,0.1)",
-          fill: false,
-          borderWidth: 2.4,
-          pointRadius: 0,
-          pointHoverRadius: 2.5,
-          tension: 0,
-          yAxisID: "y",
-        },
-        {
-          label: "Umidade Externa (%)",
-          data: dadosUmidadeArExterna,
-          borderColor: "#90dbf4",
-          backgroundColor: "rgba(144,219,244,0.1)",
-          fill: false,
-          borderWidth: 2.2,
-          pointRadius: 0,
-          pointHoverRadius: 2.5,
-          tension: 0,
-          yAxisID: "y",
-        },
+    if (historyChart) {
+      historyChart.destroy();
+    }
 
-        // TEMPERATURA
-        {
-          label: "Temperatura do Ar (°C)",
-          data: dadosTemp,
-          borderColor: "#ee6f13",
-          backgroundColor: "rgba(238,111,19,0.12)",
-          fill: false,
-          borderWidth: 2.4,
-          pointRadius: 0,
-          pointHoverRadius: 2.5,
-          tension: 0,
-          yAxisID: "y",
-        },
-        {
-          label: "Temperatura Externa (°C)",
-          data: dadosTempExterna,
-          borderColor: "#ffb703",
-          backgroundColor: "rgba(255,183,3,0.12)",
-          fill: false,
-          borderWidth: 2.2,
-          pointRadius: 0,
-          pointHoverRadius: 2.5,
-          tension: 0,
-          yAxisID: "y",
-        }
+    historyChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
 
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      devicePixelRatio: Math.max(window.devicePixelRatio || 1, 2),
-      layout: {
-        padding: {
-          left: 10,
-          right: 10,
-        },
+          // SOLO
+          {
+            label: "Solo Estufa (%)",
+            data: dadosSolo,
+            borderColor: "#2d6a4f",
+            backgroundColor: "rgba(45,106,79,0.1)",
+            fill: false,
+            borderWidth: 2.4,
+            pointRadius: 0,
+            pointHoverRadius: 2.5,
+            tension: 0,
+            yAxisID: "y",
+          },
+          {
+            label: "Solo Externo (%)",
+            data: dadosSoloExterno,
+            borderColor: "#74c69d",
+            backgroundColor: "rgba(116,198,157,0.1)",
+            fill: false,
+            borderWidth: 2.2,
+            pointRadius: 0,
+            pointHoverRadius: 2.5,
+            tension: 0,
+            yAxisID: "y",
+          },
+
+          // UMIDADE
+          {
+            label: "Umidade Ar Estufa (%)",
+            data: dadosUmidadeAr,
+            borderColor: "#4895ef",
+            backgroundColor: "rgba(72,149,239,0.1)",
+            fill: false,
+            borderWidth: 2.4,
+            pointRadius: 0,
+            pointHoverRadius: 2.5,
+            tension: 0,
+            yAxisID: "y",
+          },
+          {
+            label: "Umidade Externa (%)",
+            data: dadosUmidadeArExterna,
+            borderColor: "#90dbf4",
+            backgroundColor: "rgba(144,219,244,0.1)",
+            fill: false,
+            borderWidth: 2.2,
+            pointRadius: 0,
+            pointHoverRadius: 2.5,
+            tension: 0,
+            yAxisID: "y",
+          },
+
+          // TEMPERATURA
+          {
+            label: "Temperatura do Ar (°C)",
+            data: dadosTemp,
+            borderColor: "#ee6f13",
+            backgroundColor: "rgba(238,111,19,0.12)",
+            fill: false,
+            borderWidth: 2.4,
+            pointRadius: 0,
+            pointHoverRadius: 2.5,
+            tension: 0,
+            yAxisID: "y",
+          },
+          {
+            label: "Temperatura Externa (°C)",
+            data: dadosTempExterna,
+            borderColor: "#ffb703",
+            backgroundColor: "rgba(255,183,3,0.12)",
+            fill: false,
+            borderWidth: 2.2,
+            pointRadius: 0,
+            pointHoverRadius: 2.5,
+            tension: 0,
+            yAxisID: "y",
+          }
+
+        ]
       },
-      plugins: {
-        legend: {
-          display: true,
-          position: "top",
-          align: "center",
-          labels: {
-            usePointStyle: false,
-            boxWidth: 26,
-            boxHeight: 12,
-            padding: 14,
-            color: "#4b5563",
-            font: { size: 12, weight: "600" },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        devicePixelRatio: Math.max(window.devicePixelRatio || 1, 2),
+        layout: {
+          padding: {
+            left: 10,
+            right: 10,
+          },
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: "top",
+            align: "center",
+            labels: {
+              usePointStyle: false,
+              boxWidth: 26,
+              boxHeight: 12,
+              padding: 14,
+              color: "#4b5563",
+              font: { size: 12, weight: "600" },
+            },
+          },
+        },
+        scales: {
+          y: {
+            position: "left",
+            min: 10,
+            max: 100,
+            ticks: { stepSize: 10, color: "#6b7280" },
+            title: { display: false },
+            grid: { color: "#e5e7eb", borderDash: [4, 4] },
+          },
+          x: {
+            ticks: { color: "#6b7280", maxRotation: 18, minRotation: 18, autoSkip: true, maxTicksLimit: 12 },
+            grid: { color: "#f1f5f9", borderDash: [4, 4] },
           },
         },
       },
-      scales: {
-        y: {
-          position: "left",
-          min: 10,
-          max: 100,
-          ticks: { stepSize: 10, color: "#6b7280" },
-          title: { display: false },
-          grid: { color: "#e5e7eb", borderDash: [4, 4] },
-        },
-        x: {
-          ticks: { color: "#6b7280", maxRotation: 18, minRotation: 18, autoSkip: true, maxTicksLimit: 12 },
-          grid: { color: "#f1f5f9", borderDash: [4, 4] },
-        },
-      },
-    },
-  });
-
-  aplicarFiltroSensores();
-}
-
-function aplicarFiltroSensores() {
-  if (!historyChart) return;
-
-  SENSOR_CONTROLS.forEach(({ checkboxId, datasetIndexes }) => {
-
-    const checkbox = document.getElementById(checkboxId);
-    if (!checkbox) return;
-
-    datasetIndexes.forEach(index => {
-      historyChart.setDatasetVisibility(index, checkbox.checked);
     });
 
-  });
-
-  historyChart.update();
-}
-
-function atualizarTabsAtivas(periodo) {
-  const periodoStr = String(periodo);
-  document.querySelectorAll(".period-tab").forEach((tab) => {
-    tab.classList.toggle("active", tab.dataset.period === periodoStr);
-  });
-}
-
-function selecionarPeriodo(botao) {
-  const periodo = botao.dataset.period;
-  if (periodo === "custom") {
-    const valor = Number(prompt("Digite o período em dias (1 a 90):", String(periodoAtualDias)));
-    if (!Number.isFinite(valor) || valor < 1 || valor > 90) {
-      atualizarTabsAtivas(periodoAtualDias);
-      return;
-    }
-    periodoAtualDias = Math.round(valor);
-    atualizarTabsAtivas("custom");
-  } else {
-    periodoAtualDias = Number(periodo);
-    atualizarTabsAtivas(periodoAtualDias);
+    aplicarFiltroSensores();
   }
 
-  carregarDadosHistoricos();
-}
+  function aplicarFiltroSensores() {
+    if (!historyChart) return;
 
-function configurarTabsDePeriodo() {
-  document.querySelectorAll(".period-tab").forEach((botao) => {
-    botao.addEventListener("click", () => selecionarPeriodo(botao));
-  });
-}
+    SENSOR_CONTROLS.forEach(({ checkboxId, datasetIndexes }) => {
 
-function configurarDropdownSensores() {
-  const toggleBtn = document.getElementById("sensor-toggle");
-  const menu = document.getElementById("sensor-menu");
-  if (!toggleBtn || !menu) return;
+      const checkbox = document.getElementById(checkboxId);
+      if (!checkbox) return;
 
-  toggleBtn.addEventListener("click", () => {
-    menu.classList.toggle("hidden");
-  });
+      datasetIndexes.forEach(index => {
+        historyChart.setDatasetVisibility(index, checkbox.checked);
+      });
 
-  document.addEventListener("click", (event) => {
-    if (!menu.contains(event.target) && !toggleBtn.contains(event.target)) {
-      menu.classList.add("hidden");
+    });
+
+    historyChart.update();
+  }
+
+  function atualizarTabsAtivas(periodo) {
+    const periodoStr = String(periodo);
+    document.querySelectorAll(".period-tab").forEach((tab) => {
+      tab.classList.toggle("active", tab.dataset.period === periodoStr);
+    });
+  }
+
+  function selecionarPeriodo(botao) {
+    const periodo = botao.dataset.period;
+    if (periodo === "custom") {
+      const valor = Number(prompt("Digite o período em dias (1 a 90):", String(periodoAtualDias)));
+      if (!Number.isFinite(valor) || valor < 1 || valor > 90) {
+        atualizarTabsAtivas(periodoAtualDias);
+        return;
+      }
+      periodoAtualDias = Math.round(valor);
+      atualizarTabsAtivas("custom");
+    } else {
+      periodoAtualDias = Number(periodo);
+      atualizarTabsAtivas(periodoAtualDias);
     }
-  });
 
-  SENSOR_CONTROLS.forEach(({ checkboxId }) => {
-    const checkbox = document.getElementById(checkboxId);
-    if (!checkbox) return;
-    checkbox.addEventListener("change", aplicarFiltroSensores);
-  });
-}
+    carregarDadosHistoricos();
+  }
 
-function configurarDropdownExportacao() {
-  const toggleBtn = document.getElementById("export-toggle");
-  const menu = document.getElementById("export-menu");
-  if (!toggleBtn || !menu) return;
+  function configurarTabsDePeriodo() {
+    document.querySelectorAll(".period-tab").forEach((botao) => {
+      botao.addEventListener("click", () => selecionarPeriodo(botao));
+    });
+  }
 
-  toggleBtn.addEventListener("click", () => {
-    menu.classList.toggle("hidden");
-  });
+  function configurarDropdownSensores() {
+    const toggleBtn = document.getElementById("sensor-toggle");
+    const menu = document.getElementById("sensor-menu");
+    if (!toggleBtn || !menu) return;
 
-  document.addEventListener("click", (event) => {
-    if (!menu.contains(event.target) && !toggleBtn.contains(event.target)) {
-      menu.classList.add("hidden");
-    }
-  });
-}
+    toggleBtn.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+    });
 
-function exportarCSV() {
-  const { header, rows } = obterLinhasTabela();
-  const csvRows = [header, ...rows];
+    document.addEventListener("click", (event) => {
+      if (!menu.contains(event.target) && !toggleBtn.contains(event.target)) {
+        menu.classList.add("hidden");
+      }
+    });
 
-  const csv = csvRows.map((r) => r.join(",")).join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
+    SENSOR_CONTROLS.forEach(({ checkboxId }) => {
+      const checkbox = document.getElementById(checkboxId);
+      if (!checkbox) return;
+      checkbox.addEventListener("change", aplicarFiltroSensores);
+    });
+  }
 
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "historico_estufa.csv";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
+  function configurarDropdownExportacao() {
+    const toggleBtn = document.getElementById("export-toggle");
+    const menu = document.getElementById("export-menu");
+    if (!toggleBtn || !menu) return;
 
-function obterLinhasTabela() {
-  const header = [...document.querySelectorAll(".data-table thead th")].map((th) => th.innerText.trim());
-  const trList = document.querySelectorAll("#table-body tr");
-  const rows = trList.length
-    ? [...trList].map((tr) => [...tr.querySelectorAll("td")].map((td) => td.innerText))
-    : [];
-  return { header, rows };
-}
+    toggleBtn.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+    });
 
-function exportarPDF() {
-  const tabela = document.querySelector(".history-table-wrap");
-  const canvas = document.getElementById("historyChart");
-  if (!tabela) return;
+    document.addEventListener("click", (event) => {
+      if (!menu.contains(event.target) && !toggleBtn.contains(event.target)) {
+        menu.classList.add("hidden");
+      }
+    });
+  }
 
-  const printWindow = window.open("", "_blank", "width=1100,height=800");
-  if (!printWindow) return;
+  function exportarCSV() {
+    const { header, rows } = obterLinhasTabela();
+    const csvRows = [header, ...rows];
 
-  const chartImage = canvas ? canvas.toDataURL("image/png") : "";
+    const csv = csvRows.map((r) => r.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
 
-  printWindow.document.write(`
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "historico_estufa.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function obterLinhasTabela() {
+    const header = [...document.querySelectorAll(".data-table thead th")].map((th) => th.innerText.trim());
+    const trList = document.querySelectorAll("#table-body tr");
+    const rows = trList.length
+      ? [...trList].map((tr) => [...tr.querySelectorAll("td")].map((td) => td.innerText))
+      : [];
+    return { header, rows };
+  }
+
+  function exportarPDF() {
+    const tabela = document.querySelector(".history-table-wrap");
+    const canvas = document.getElementById("historyChart");
+    if (!tabela) return;
+
+    const printWindow = window.open("", "_blank", "width=1100,height=800");
+    if (!printWindow) return;
+
+    const chartImage = canvas ? canvas.toDataURL("image/png") : "";
+
+    printWindow.document.write(`
     <html>
       <head>
         <title>Histórico de Medições</title>
@@ -359,41 +363,41 @@ function exportarPDF() {
       </body>
     </html>
   `);
-  printWindow.document.close();
-  printWindow.focus();
-  printWindow.print();
-}
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  }
 
-function exportarImagem() {
-  const canvas = document.getElementById("historyChart");
-  if (!canvas) return;
-  const url = canvas.toDataURL("image/png");
+  function exportarImagem() {
+    const canvas = document.getElementById("historyChart");
+    if (!canvas) return;
+    const url = canvas.toDataURL("image/png");
 
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "historico_grafico.png";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "historico_grafico.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
-window.carregarDadosHistoricos = carregarDadosHistoricos;
-window.exportarCSV = exportarCSV;
-window.exportarPDF = exportarPDF;
-window.exportarImagem = exportarImagem;
+  window.carregarDadosHistoricos = carregarDadosHistoricos;
+  window.exportarCSV = exportarCSV;
+  window.exportarPDF = exportarPDF;
+  window.exportarImagem = exportarImagem;
 
-configurarTabsDePeriodo();
-configurarDropdownSensores();
-configurarDropdownExportacao();
-atualizarTabsAtivas(periodoAtualDias);
-carregarDadosHistoricos();
+  configurarTabsDePeriodo();
+  configurarDropdownSensores();
+  configurarDropdownExportacao();
+  atualizarTabsAtivas(periodoAtualDias);
+  carregarDadosHistoricos();
 
 
-function logout() {
+  function logout() {
     // limpa login salvo (se você usar depois)
     localStorage.removeItem("user");
     localStorage.removeItem("token");
 
     // volta pro login
     window.location.href = "login.html";
-}
+  }
