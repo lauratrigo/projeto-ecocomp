@@ -27,6 +27,7 @@ mongoose.connect(process.env.MONGODB_URI)
 //     password: process.env.MQTT_PASSWORD
 // });
 
+
 // mqttClient.on("connect", () => {
 //     console.log("MQTT conectado");
 
@@ -380,4 +381,9 @@ app.post("/api/reset-password-direct", async (req, res) => {
         console.error(err);
         res.status(500).json({ erro: "Erro ao alterar senha" });
     }
+});
+
+app.get("/test-device", async (req, res) => {
+    const d = await Device.findOne({ deviceId: "estufa-001" });
+    res.json(d);
 });
