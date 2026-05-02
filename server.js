@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const mqtt = require("mqtt");
 
 require("dotenv").config();
 
@@ -16,6 +17,31 @@ const PORT = process.env.PORT || 3000;
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log("Mongo conectado"))
     .catch(err => console.log("Erro Mongo:", err));
+
+/* ================================
+   MQTT
+================================ */
+
+const mqttClient = mqtt.connect(process.env.MQTT_BROKER_URL, {
+    username: process.env.MQTT_USERNAME,
+    password: process.env.MQTT_PASSWORD
+});
+
+mqttClient.on("connect", () => {
+    console.log("MQTT conectado");
+
+    mqttClient.subscribe("ecocomp/+/telemetry", (err) => {
+        if (err) {
+            console.error("Erro ao assinar tópico:", err);
+        } else {
+            console.log("Inscrito no tópico MQTT");
+        }
+    });
+});
+
+mqttClient.on("error", (err) => {
+    console.error("Erro MQTT:", err);
+});
 
 /* ================================
    SCHEMAS
@@ -64,6 +90,40 @@ const ConfigSchema = new mongoose.Schema({
 const Reading = mongoose.model("Reading", ReadingSchema);
 const Actuator = mongoose.model("Actuator", ActuatorSchema);
 const Config = mongoose.model("Config", ConfigSchema);
+
+
+mqttClient.on("message", async (topic, message) => {
+    try {
+        const payload = JSON.parse(message.toString());
+
+        const {
+            deviceId,
+            soil,
+            airHumidity,
+            airTemp,
+            soilExternal,
+            airHumidityExternal,
+            tempExternal
+        } = payload;
+
+        const data = new Reading({
+            deviceId,
+            soil: soil ?? 0,
+            airHumidity: airHumidity ?? 0,
+            airTemp: airTemp ?? 0,
+            soilExternal: soilExternal ?? 0,
+            airHumidityExternal: airHumidityExternal ?? 0,
+            tempExternal: tempExternal ?? 0
+        });
+
+        await data.save();
+
+        console.log("📡 Dado salvo via MQTT:", deviceId);
+
+    } catch (error) {
+        console.error("Erro ao processar MQTT:", error);
+    }
+});
 
 /* ================================
    ROTAS DE TESTE
